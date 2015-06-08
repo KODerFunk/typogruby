@@ -36,28 +36,28 @@ module Typogruby
   # to the HTML entity and surrounds it in a span with a styled class.
   #
   # @example
-  #   amp('One & two')
+  #   amps('One & two')
   #   # => 'One <span class="amp">&amp;</span> two'
-  #   amp('One &amp; two')
+  #   amps('One &amp; two')
   #   # => 'One <span class="amp">&amp;</span> two'
-  #   amp('One &#38; two')
+  #   amps('One &#38; two')
   #   # => 'One <span class="amp">&amp;</span> two'
-  #   amp('One&nbsp;&amp;&nbsp;two')
+  #   amps('One&nbsp;&amp;&nbsp;two')
   #   # => 'One&nbsp;<span class="amp">&amp;</span>&nbsp;two'
   #
   # @example It won't mess up & that are already wrapped, in entities or URLs
-  #   amp('One <span class="amp">&amp;</span> two')
+  #   amps('One <span class="amp">&amp;</span> two')
   #   # => 'One <span class="amp">&amp;</span> two'
-  #   amp('&ldquo;this&rdquo; & <a href="/?that&amp;test">that</a>')
+  #   amps('&ldquo;this&rdquo; & <a href="/?that&amp;test">that</a>')
   #   # => '&ldquo;this&rdquo; <span class="amp">&amp;</span> <a href="/?that&amp;test">that</a>'
   #
   # @example It should ignore standalone amps that are in attributes
-  #   amp('<link href="xyz.html" title="One & Two">xyz</link>')
+  #   amps('<link href="xyz.html" title="One & Two">xyz</link>')
   #   # => '<link href="xyz.html" title="One & Two">xyz</link>'
   #
   # @param [String] text input text
   # @return [String] input text with ampersands wrapped
-  def amp(text)
+  def amps(text)
     # $1 is the part before the caps and $2 is the amp match
     exclude_sensitive_tags(text) do |t|
       t.gsub(/(\s|&nbsp;)&(?:amp;|#38;)?(\s|&nbsp;)/) { |str|
@@ -240,9 +240,21 @@ module Typogruby
   # main function to do all the functions from the method.
   #
   # @param [String] text input text
-  # @return [String] input text with all filters applied
-  def improve(text)
-    initial_quotes(entities(caps(smartypants(widont(amp(text))))))
+  # @param [Hash<Boolean>] options choose which filters to be disabled
+  # @return [String] input text with selected filters applied
+  def improve(text, options = {})
+
+    if options.empty?
+      initial_quotes(entities(caps(smartypants(widont(amps(text))))))
+    else
+      text = amps(text) unless options[:no_amps]
+      text = widont(text) unless options[:no_widont]
+      text = smartypants(text) unless options[:no_smartypants]
+      text = caps(text) unless options[:no_caps]
+      text = entities(text) unless options[:no_entities]
+      text = initial_quotes(text) unless options[:no_initial_quotes]
+      text
+    end
   end
 
 private

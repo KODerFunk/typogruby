@@ -6,20 +6,20 @@ class TypogrubyTest < Minitest::Test
   include Typogruby
 
   def test_should_replace_amps
-    assert_equal 'One <span class="amp">&amp;</span> two', amp('One & two')
-    assert_equal 'One <span class="amp">&amp;</span> two', amp('One &amp; two')
-    assert_equal 'One <span class="amp">&amp;</span> two', amp('One &#38; two')
-    assert_equal 'One&nbsp;<span class="amp">&amp;</span>&nbsp;two', amp('One&nbsp;&amp;&nbsp;two')
+    assert_equal 'One <span class="amp">&amp;</span> two', amps('One & two')
+    assert_equal 'One <span class="amp">&amp;</span> two', amps('One &amp; two')
+    assert_equal 'One <span class="amp">&amp;</span> two', amps('One &#38; two')
+    assert_equal 'One&nbsp;<span class="amp">&amp;</span>&nbsp;two', amps('One&nbsp;&amp;&nbsp;two')
   end
 
   def test_should_ignore_special_amps
-    assert_equal 'One <span class="amp">&amp;</span> two', amp('One <span class="amp">&amp;</span> two')
-    assert_equal '&ldquo;this&rdquo; <span class="amp">&amp;</span> <a href="/?that&amp;test">that</a>', amp('&ldquo;this&rdquo; & <a href="/?that&amp;test">that</a>')
+    assert_equal 'One <span class="amp">&amp;</span> two', amps('One <span class="amp">&amp;</span> two')
+    assert_equal '&ldquo;this&rdquo; <span class="amp">&amp;</span> <a href="/?that&amp;test">that</a>', amps('&ldquo;this&rdquo; & <a href="/?that&amp;test">that</a>')
     assert_equal %Q{<script>\nvar x = "FOO & BAR";\n</script>"}, initial_quotes(%Q{<script>\nvar x = "FOO & BAR";\n</script>"})
   end
 
   def test_should_ignore_standalone_amps_in_attributes
-    assert_equal '<link href="xyz.html" title="One &amp; Two">xyz</link>', amp('<link href="xyz.html" title="One & Two">xyz</link>')
+    assert_equal '<link href="xyz.html" title="One &amp; Two">xyz</link>', amps('<link href="xyz.html" title="One & Two">xyz</link>')
   end
 
   def test_should_replace_caps
