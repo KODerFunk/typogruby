@@ -66,6 +66,21 @@ module Typogruby
     end
   end
 
+  # replaces space(s) between prepositions and words.
+  #
+  # @example
+  #   widont('A very simple test')
+  #   # => 'A&nbsp;very simple test'
+  def glue_prepositions(text)
+    exclude_sensitive_tags(text) do |t|
+      t.gsub(%r{
+        ([>\s][^<>\s]{1,3})                             # must be flollowed by non-tag non-space characters
+        \s+                                             # the space to replace
+        ([^<>\s]+)                                      # must be flollowed by non-tag non-space characters
+      }xm) { "#{$1}&nbsp;#{$2}" }
+    end
+  end
+
   # replaces space(s) before the last word (or tag before the last word)
   # before an optional closing element (<tt>a</tt>, <tt>em</tt>,
   # <tt>span</tt>, strong) before a closing tag (<tt>p</tt>, <tt>h[1-6]</tt>,
@@ -245,9 +260,10 @@ module Typogruby
   def improve(text, options = {})
 
     if options.empty?
-      initial_quotes(entities(caps(smartypants(widont(amps(text))))))
+      initial_quotes(entities(caps(smartypants(widont(glue_prepositions(amps(text)))))))
     else
       text = amps(text) unless options[:no_amps]
+      text = glue_prepositions(text) unless options[:no_glue_prepositions]
       text = widont(text) unless options[:no_widont]
       text = smartypants(text) unless options[:no_smartypants]
       text = caps(text) unless options[:no_caps]
