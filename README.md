@@ -29,6 +29,19 @@ include Typogruby
 improve('Hello, world!')
 ```
 
+Or, you can include HAML filter in `config/initializers/typogruby.rb`:
+
+```ruby
+require 'haml/filters/typogruby'
+```
+
+and use it in your haml:
+```haml
+.luxury-caption
+  :typogruby
+    Hello, world!
+```
+
 See the [full API documentation][4] for more information. You could also use [this Textmate Bundle][5].
 
 ## From the command line
